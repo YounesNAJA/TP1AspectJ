@@ -11,6 +11,6 @@ public class Application {
 		Client cl = (Client) context.getBean("Client");
 		cl.setNom("Younes NAJA");
 		cl.getCp().setSolde(1000);
-		cl.getCp().debiter(500);
+		cl.retirer(500);
 	}
 }
