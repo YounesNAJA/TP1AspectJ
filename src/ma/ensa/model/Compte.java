@@ -1,5 +1,8 @@
 package ma.ensa.model;
 
+import org.springframework.stereotype.Component;
+
+@Component("Compte")
 public class Compte {
 	private double solde;
 
