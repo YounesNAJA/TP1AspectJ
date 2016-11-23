@@ -12,5 +12,6 @@ public class Application {
 		cl.setNom("Younes NAJA");
 		cl.getCp().setSolde(1000);
 		cl.retirer(500);
+		cl.verser(300);
 	}
 }

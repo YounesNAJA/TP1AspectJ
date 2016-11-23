@@ -15,10 +15,22 @@ public class Compte {
 	}
 
 	public void debiter(double mt) {
+		try {
+			Thread.sleep(954);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		this.solde -= mt;
 	}
 
 	public void approvisionner(double mt) {
+		try {
+			Thread.sleep(415);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		this.solde += mt;
 	}
 
