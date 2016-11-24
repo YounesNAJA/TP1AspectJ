@@ -1,6 +1,9 @@
-2016-11-24 01:53:43,704 [FATAL] (CompteLog.java:beforeDebit:29) Retrait de 500.0 sur le compte de : Younes NAJA
-2016-11-24 01:53:44,660 [FATAL] (Client.java:debiter_aroundBody1$advice:39)  - 955ms.
-2016-11-24 01:53:44,660 [FATAL] (CompteLog.java:afterDebit:47) Nouveau solde : 500.0
-2016-11-24 01:53:44,660 [FATAL] (CompteLog.java:beforeApprovisionner:64) Approvisionnement de 300.0 sur le compte de : Younes NAJA
-2016-11-24 01:53:45,076 [FATAL] (Client.java:approvisionner_aroundBody3$advice:74)  - 416ms.
-2016-11-24 01:53:45,076 [FATAL] (CompteLog.java:afterApprovisionner:83) Nouveau solde : 800.0
+2016-11-24 03:03:29,197 [FATAL] (CompteLog.java:beforeDebit:28) Retrait de 500.0 sur le compte de : Younes NAJA
+2016-11-24 03:03:30,153 [FATAL] (Client.java:debiter_aroundBody1$advice:44)  - 955ms.
+2016-11-24 03:03:30,153 [FATAL] (CompteLog.java:afterDebit:54) Nouveau solde : 500.0
+2016-11-24 03:03:30,153 [FATAL] (CompteLog.java:beforeApprovisionner:72) Approvisionnement de 300.0 sur le compte de : Younes NAJA
+2016-11-24 03:03:30,568 [FATAL] (Client.java:approvisionner_aroundBody3$advice:83)  - 415ms.
+2016-11-24 03:03:30,568 [FATAL] (CompteLog.java:afterApprovisionner:92) Nouveau solde : 800.0
+2016-11-24 03:03:30,570 [FATAL] (CompteLog.java:beforeDebit:28) Retrait de 1000.0 sur le compte de : Younes NAJA
+2016-11-24 03:03:30,570 [FATAL] (Client.java:debiter_aroundBody1$advice:39) Solde insuffisant. Impossible d'effectuer ce retrait.
+2016-11-24 03:03:30,570 [FATAL] (CompteLog.java:afterDebit:54) Nouveau solde : 800.0

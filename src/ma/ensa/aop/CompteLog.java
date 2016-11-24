@@ -1,6 +1,5 @@
 package ma.ensa.aop;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,20 +24,28 @@ public class CompteLog {
 	@Before("debit()")
 	public void beforeDebit(JoinPoint thisJoinPoint) {
 		Client client = (Client) thisJoinPoint.getThis();
-		
+
 		rootLogger.fatal("Retrait de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
-		// System.out.print("Retrait de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
+		// System.out.print("Retrait de " + thisJoinPoint.getArgs()[0] + " sur
+		// le compte de : " + client.getNom());
 	}
 
 	@Around("debit()")
 	public Object aroundDebit(ProceedingJoinPoint thisJoinPoint) {
 		start = System.currentTimeMillis();
-		Object result = thisJoinPoint.proceed();
-		tempsExecution = System.currentTimeMillis() - start;
-		
-		rootLogger.fatal(" - " + tempsExecution + "ms.");
+		Client client = (Client) thisJoinPoint.getThis();
+
+		if (client.getCp().getSolde() < (double) thisJoinPoint.getArgs()[0]) {
+			rootLogger.fatal("Solde insuffisant. Impossible d'effectuer ce retrait.");
+			return false;
+		} else {
+			Object result = thisJoinPoint.proceed();
+			tempsExecution = System.currentTimeMillis() - start;
+			rootLogger.fatal(" - " + tempsExecution + "ms.");
+			return result;
+		}
 		// System.out.println(" - " + tempsExecution + "ms.");
-		return result;
+
 	}
 
 	@After("debit()")
@@ -61,8 +68,10 @@ public class CompteLog {
 	@Before("approvisionner()")
 	public void beforeApprovisionner(JoinPoint thisJoinPoint) {
 		Client client = (Client) thisJoinPoint.getThis();
-		rootLogger.fatal("Approvisionnement de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
-		// System.out.print("Approvisionnement de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
+		rootLogger
+				.fatal("Approvisionnement de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
+		// System.out.print("Approvisionnement de " + thisJoinPoint.getArgs()[0]
+		// + " sur le compte de : " + client.getNom());
 	}
 
 	@Around("approvisionner()")
@@ -70,7 +79,7 @@ public class CompteLog {
 		start = System.currentTimeMillis();
 		Object result = thisJoinPoint.proceed();
 		tempsExecution = System.currentTimeMillis() - start;
-		
+
 		rootLogger.fatal(" - " + tempsExecution + "ms.");
 		// System.out.println(" - " + tempsExecution + "ms.");
 		return result;
@@ -79,7 +88,7 @@ public class CompteLog {
 	@After("approvisionner()")
 	public void afterApprovisionner(JoinPoint thisJoinPoint) {
 		Client client = (Client) thisJoinPoint.getThis();
-		
+
 		rootLogger.fatal("Nouveau solde : " + client.getCp().getSolde());
 		// System.out.println("Nouveau solde : " + client.getCp().getSolde());
 	}

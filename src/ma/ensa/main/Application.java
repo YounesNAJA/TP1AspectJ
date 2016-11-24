@@ -13,5 +13,6 @@ public class Application {
 		cl.getCp().setSolde(1000);
 		cl.retirer(500);
 		cl.verser(300);
+		cl.retirer(1000);
 	}
 }
