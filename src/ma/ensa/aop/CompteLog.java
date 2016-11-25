@@ -3,59 +3,72 @@ package ma.ensa.aop;
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-
 import ma.ensa.model.Client;
 
 @Aspect
 public class CompteLog {
+	/*
+	 * Debut de l'execution
+	 */
 	private long start;
+	
+	/*
+	 * Debut de l'execution
+	 */
 	private Long tempsExecution;
+
 	Logger rootLogger = Logger.getRootLogger();
 
+	/*
+	 * Pointcut pour la méthode debiter()
+	 */
 	@Pointcut("call(void *..*.Compte.debiter(double))")
 	public void debit() {
 	};
 
-	@Before("debit()")
-	public void beforeDebit(JoinPoint thisJoinPoint) {
-		Client client = (Client) thisJoinPoint.getThis();
-
-		rootLogger.fatal("Retrait de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
-		// System.out.print("Retrait de " + thisJoinPoint.getArgs()[0] + " sur
-		// le compte de : " + client.getNom());
-	}
-
+	/*
+	 * Advice @Around
+	 */
 	@Around("debit()")
-	public Object aroundDebit(ProceedingJoinPoint thisJoinPoint) {
+	public Object aroundDebit(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		start = System.currentTimeMillis();
 		Client client = (Client) thisJoinPoint.getThis();
 
+		/*
+		 * Test si le paramètre (Montant) est supérieur au solde du compte
+		 */
 		if (client.getCp().getSolde() < (double) thisJoinPoint.getArgs()[0]) {
-			rootLogger.fatal("Solde insuffisant. Impossible d'effectuer ce retrait.");
-			return false;
+			throw new CompteException("Solde insuffisant.");
 		} else {
 			Object result = thisJoinPoint.proceed();
 			tempsExecution = System.currentTimeMillis() - start;
-			rootLogger.fatal(" - " + tempsExecution + "ms.");
 			return result;
 		}
-		// System.out.println(" - " + tempsExecution + "ms.");
-
+	}
+	
+	/*
+	 * Si l'execution de debit() lève une exception
+	 */
+	@AfterThrowing("debit()")
+	public void afterThrowingDebit(JoinPoint thisJoinPoint) {
+		Client client = (Client) thisJoinPoint.getThis();
+		rootLogger.fatal("Un problème est survenu lors de l'opération de retrait de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
+		rootLogger.fatal("Le solde actuel : " + client.getCp().getSolde());
 	}
 
-	@After("debit()")
+	/*
+	 * Si l'execution de debit() ne lève aucune exception
+	 */
+	@AfterReturning("debit()")
 	public void afterDebit(JoinPoint thisJoinPoint) {
 		Client client = (Client) thisJoinPoint.getThis();
+		rootLogger.fatal("Retrait de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom() + ". Opération effectuée avec succès. (" + tempsExecution + "ms)");
 		rootLogger.fatal("Nouveau solde : " + client.getCp().getSolde());
-		/*
-		 * Est-ce la bonne méthode ?
-		 */
-		// System.out.println("Nouveau solde : " + client.getCp().getSolde());
 	}
 
 	/*
@@ -65,31 +78,23 @@ public class CompteLog {
 	public void approvisionner() {
 	};
 
-	@Before("approvisionner()")
-	public void beforeApprovisionner(JoinPoint thisJoinPoint) {
-		Client client = (Client) thisJoinPoint.getThis();
-		rootLogger
-				.fatal("Approvisionnement de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom());
-		// System.out.print("Approvisionnement de " + thisJoinPoint.getArgs()[0]
-		// + " sur le compte de : " + client.getNom());
-	}
-
 	@Around("approvisionner()")
-	public Object aroundApprovisionner(ProceedingJoinPoint thisJoinPoint) {
+	public Object aroundApprovisionner(ProceedingJoinPoint thisJoinPoint) throws Throwable {
 		start = System.currentTimeMillis();
 		Object result = thisJoinPoint.proceed();
 		tempsExecution = System.currentTimeMillis() - start;
-
-		rootLogger.fatal(" - " + tempsExecution + "ms.");
-		// System.out.println(" - " + tempsExecution + "ms.");
 		return result;
 	}
+	
+	@AfterThrowing("approvisionner()")
+	public void afterThrowingApprovisionner(JoinPoint thisJoinPoint) {
+		rootLogger.fatal("Un problème est survenu lors de l'opération d'approvisionnement.");
+	}
 
-	@After("approvisionner()")
+	@AfterReturning("approvisionner()")
 	public void afterApprovisionner(JoinPoint thisJoinPoint) {
 		Client client = (Client) thisJoinPoint.getThis();
-
+		rootLogger.fatal("Approvisionnement de " + thisJoinPoint.getArgs()[0] + " sur le compte de : " + client.getNom() + ". Opération effectuée avec succès. (" + tempsExecution + "ms)");
 		rootLogger.fatal("Nouveau solde : " + client.getCp().getSolde());
-		// System.out.println("Nouveau solde : " + client.getCp().getSolde());
 	}
 }
